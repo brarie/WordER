@@ -24,6 +24,9 @@ release
 *.sln
 *.sw?
 
+# Claude Code
+.claude
+
 # Database
 *.db
 *.sqlite
