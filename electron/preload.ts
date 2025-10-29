@@ -1,19 +1,33 @@
-import { contextBridge, ipcRenderer } from 'electron'
+const { contextBridge, ipcRenderer } = require('electron')
+
+console.log('Preload script is running!')
 
 contextBridge.exposeInMainWorld('electron', {
-  // Database operations
   db: {
-    getTabs: () => ipcRenderer.invoke('db:getTabs'),
-    createTab: (name: string) => ipcRenderer.invoke('db:createTab', name),
-    deleteTab: (id: number) => ipcRenderer.invoke('db:deleteTab', id),
-    getWords: (tabId: number) => ipcRenderer.invoke('db:getWords', tabId),
+    // Folders
+    getFolders: () => ipcRenderer.invoke('db:getFolders'),
+    createFolder: (name: string) => ipcRenderer.invoke('db:createFolder', name),
+    deleteFolder: (id: number) => ipcRenderer.invoke('db:deleteFolder', id),
+
+    // Voca Lists
+    getVocaLists: () => ipcRenderer.invoke('db:getVocaLists'),
+    createVocaList: (name: string, folderId: number | null) => ipcRenderer.invoke('db:createVocaList', name, folderId),
+    updateVocaList: (id: number, name: string, folderId: number | null) => ipcRenderer.invoke('db:updateVocaList', id, name, folderId),
+    deleteVocaList: (id: number) => ipcRenderer.invoke('db:deleteVocaList', id),
+
+    // Open tabs
+    getOpenTabs: () => ipcRenderer.invoke('db:getOpenTabs'),
+    addOpenTab: (vocaListId: number) => ipcRenderer.invoke('db:addOpenTab', vocaListId),
+    removeOpenTab: (vocaListId: number) => ipcRenderer.invoke('db:removeOpenTab', vocaListId),
+
+    // Words
+    getWords: (vocaListId: number) => ipcRenderer.invoke('db:getWords', vocaListId),
     createWord: (word: any) => ipcRenderer.invoke('db:createWord', word),
     updateWord: (word: any) => ipcRenderer.invoke('db:updateWord', word),
     deleteWord: (id: number) => ipcRenderer.invoke('db:deleteWord', id),
   },
-  // Export operations
   export: {
-    toPDF: (tabId: number) => ipcRenderer.invoke('export:pdf', tabId),
-    toExcel: (tabId: number) => ipcRenderer.invoke('export:excel', tabId),
+    toPDF: (vocaListId: number) => ipcRenderer.invoke('export:pdf', vocaListId),
+    toExcel: (vocaListId: number) => ipcRenderer.invoke('export:excel', vocaListId),
   },
 })
